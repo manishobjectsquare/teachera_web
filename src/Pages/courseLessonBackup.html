@@ -1,0 +1,95 @@
+<div className="course-lesson">
+    <h4 className="title mb-3">{t("Course Curriculum")}</h4>
+    <div className="accordion" id="lesson">
+        {(chapterDetails || []).map((chapter, index) => (
+        <div className="accordion-item" key={chapter._id}>
+            <h2 className="accordion-header">
+                <button className="accordion-button" type="button" data-bs-toggle="collapse"
+                    data-bs-target={`#lesson-${index}`}>
+                    {index + 1}. {chapter.title}
+                </button>
+            </h2>
+            <div id={`lesson-${index}`} className={`accordion-collapse collapse ${index===0 ? "show" : "" }`}
+                data-bs-parent="#lesson">
+                <div className="accordion-body">
+                    {/* Video Lessons */}
+                    {(chapter.lessonDetails || []).map((lesson) => {
+
+                    if (isFree) {
+                    return (
+                    <a href={ course.chapterDetails[0].lessonDetails[0] .video_link } className="lission-list"
+                        key={lesson._id}>
+                        <h5>
+                            <i className="fas fa-video me-2"></i>
+                            {lesson.title}
+                        </h5>
+                        <span>
+                            <i className="fal fa-clock me-2"></i>
+                            {minutesToHours(lesson?.duration)}
+                        </span>
+                    </a>
+                    );
+                    } else {
+                    return (
+                    <a href="javascript:;" className="lission-list" key={lesson._id}>
+                        <h5>
+                            <i className="fas fa-video me-2"></i>
+                            {lesson.title}
+                        </h5>
+                        <span className="item-meta duration">
+                            {minutesToHours(lesson?.duration)}{" "}
+                            <img src={Lock} alt="icon" />
+                        </span>
+                    </a>
+                    );
+                    }
+                    })}
+
+                    {/* Documents */}
+                    {(chapter.documentDetails || []).map((doc) => (
+                    <a href="javascript:;" className="lission-list" key={doc._id}>
+                        <h5>
+                            <i className="fas fa-file me-2"></i>
+                            {doc.title}
+                        </h5>
+                        <span className="item-meta duration">
+                            {doc.file_type} <img src={Lock} alt="icon" />
+                        </span>
+                    </a>
+                    ))}
+
+                    {/* Live Lessons */}
+                    {(chapter.liveLessonDetails || []).map(
+                    (liveLesson) => (
+                    <a href="javascript:;" className="lission-list" key={liveLesson._id}>
+                        <h5>
+                            <i className="fas fa-video-camera me-2"></i>
+                            {liveLesson.title}{" "}
+                            <span className="badge bg-primary">LIVE</span>
+                        </h5>
+                        <span className="item-meta duration">
+                            {minutesToHours(liveLesson?.duration)}{" "}
+                            <img src={Lock} alt="icon" />
+                        </span>
+                    </a>
+                    )
+                    )}
+
+                    {/* Quizzes */}
+                    {(chapter.quizDetails || []).map((quiz) => (
+                    <a href="javascript:;" className="lission-list" key={quiz._id}>
+                        <h5>
+                            <i className="fas fa-question-circle me-2"></i>
+                            {quiz.title}
+                        </h5>
+                        <span className="item-meta duration">
+                            {quiz.time} min <img src={Lock} alt="icon" />
+                        </span>
+                    </a>
+                    ))}
+                </div>
+            </div>
+        </div>
+        ))}
+    </div>
+</div>

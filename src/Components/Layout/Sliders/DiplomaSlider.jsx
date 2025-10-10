@@ -1,0 +1,626 @@
+"use client";
+
+import { useEffect, useState } from "react";
+import OwlCarousel from "react-owl-carousel";
+import { Link } from "react-router-dom";
+import { useTranslation } from "react-i18next";
+import "owl.carousel/dist/assets/owl.carousel.css";
+import "owl.carousel/dist/assets/owl.theme.default.css";
+import { baseUrl } from "../../../../config/baseUrl";
+
+const DiplomaSlider = () => {
+  const { t } = useTranslation();
+  const [diplomas, setDiplomas] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  const courseSliderOptions = {
+    loop: true,
+    margin: 20,
+    nav: true,
+    dots: false,
+    autoplay: false,
+    smartSpeed: 500,
+    navText: [
+      '<span class="fa fa-chevron-left"></span>',
+      '<span class="fas fa-chevron-right"></span>',
+    ],
+    responsive: {
+      0: {
+        items: 1,
+      },
+      600: {
+        items: 1,
+      },
+      768: {
+        items: 2,
+      },
+      1000: {
+        items: 2,
+      },
+      1200: {
+        items: 2,
+      },
+      1600: {
+        items: 3,
+      },
+    },
+  };
+
+  useEffect(() => {
+    const fetchDiplomas = async () => {
+      try {
+        setLoading(true);
+        const res = await fetch(`${baseUrl}/api/v1/web/courses/diploma-list`);
+        const json = await res.json();
+        setDiplomas(json.data || []);
+      } catch (error) {
+        console.error("Error fetching diplomas:", error);
+        setDiplomas([]);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchDiplomas();
+  }, []);
+
+  const formatCurrency = (amount) => `$${Number.parseFloat(amount).toFixed(2)}`;
+
+  const calculateSavings = (originalPrice, offerPrice) => {
+    const savings = ((originalPrice - offerPrice) / originalPrice) * 100;
+    return Math.round(savings);
+  };
+
+  if (loading) {
+    return (
+      <div className="diploma-slider-loading">
+        <div className="loading-cards">
+          {[...Array(3)].map((_, index) => (
+            <div key={index} className="loading-card-horizontal">
+              <div className="loading-image-horizontal"></div>
+              <div className="loading-content-horizontal">
+                <div className="loading-title-horizontal"></div>
+                <div className="loading-instructor-horizontal"></div>
+                <div className="loading-price-horizontal"></div>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <>
+      {diplomas.length > 0 && (
+        <div className="diploma-slider-container">
+          <div className="row">
+            {diplomas.map((diploma) => {
+              const savingsPercentage = calculateSavings(
+                diploma?.price,
+                diploma?.offerPrice
+              );
+
+              return (
+                <div className="col-lg-6 diploma_card_" key={diploma?._id}>
+                  <div className="item">
+                    <div className="diploma-card-horizontal">
+                      <Link
+                        to={`/diploma-details/${diploma?._id}`}
+                        className="diploma-link-horizontal"
+                      >
+                        <div className="diploma-card-inner">
+                          <div className="diploma-image-section">
+                            <img
+                              src={`https://api.basementex.com/${diploma?.image}`}
+                              alt={diploma?.title}
+                              className="diploma-image-horizontal"
+                              onError={(e) => {
+                                e.target.onerror = null;
+                                e.target.src = "/square_logo.png";
+                              }}
+                            />
+
+                            <div className="live-badge">
+                              <span className="badge-live">
+                                <i className="fas fa-circle live-dot"></i>{" "}
+                                {t("LIVE")}
+                              </span>
+                            </div>
+
+                            {/* <div className="bookmark-btn-horizontal">
+                              <i className="far fa-bookmark"></i>
+                            </div> */}
+                          </div>
+
+                          <div className="diploma-content-horizontal">
+                            <div className="diploma-header">
+                              <h4 className="diploma-title-horizontal">
+                                {diploma?.title}
+                              </h4>
+                              {/* <p className="diploma-instructor">{diploma?.instructor?.name || t("Expert Instructor")}</p> */}
+                            </div>
+
+                            <div className="diploma-meta">
+                              <div className="diploma-stats-horizontal">
+                                <span className="stat-item-horizontal">
+                                  <i className="fas fa-play-circle"></i>
+                                  {diploma?.courses?.length || 0} {t("Courses")}
+                                </span>
+                                <span className="stat-item-horizontal">
+                                  <i className="fas fa-video"></i>
+                                  {diploma?.liveCourses?.length || 0}{" "}
+                                  {t("Live")}
+                                </span>
+                                <span className="stat-item-horizontal">
+                                  <i className="fas fa-book"></i>
+                                  {diploma?.chapters || 0} {t("Chapters")}
+                                </span>
+                              </div>
+
+                              <div className="diploma-pricing-horizontal">
+                                <span className="current-price-horizontal">
+                                  {formatCurrency(diploma?.offerPrice)}
+                                </span>
+                                {diploma?.price > diploma?.offerPrice && (
+                                  <span className="original-price-horizontal">
+                                    {formatCurrency(diploma?.price)}
+                                  </span>
+                                )}
+                                {/* {savingsPercentage > 0 && (
+                                  <span className="savings-text">
+                                    {savingsPercentage}% {t("off")}
+                                  </span>
+                                )} */}
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      </Link>
+                    </div>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        </div>
+      )}
+      <style>{`
+        .diploma-slider-container {
+          position: relative;
+          padding: 0 10px;
+        }
+
+        .diploma-slider-loading {
+          padding: 20px 0;
+        }
+
+        .loading-cards {
+          display: flex;
+          gap: 20px;
+          overflow: hidden;
+        }
+
+        .loading-card-horizontal {
+          display: flex;
+          background: #f8f9fa;
+          border-radius: 12px;
+          overflow: hidden;
+          min-width: 400px;
+          height: 160px;
+          animation: pulse 1.5s ease-in-out infinite;
+        }
+
+        .loading-image-horizontal {
+          width: 140px;
+          height: 100%;
+          background: #e9ecef;
+          flex-shrink: 0;
+        }
+
+        .loading-content-horizontal {
+          padding: 20px;
+          flex: 1;
+          display: flex;
+          flex-direction: column;
+          gap: 10px;
+        }
+
+        .loading-title-horizontal {
+          height: 20px;
+          background: #e9ecef;
+          border-radius: 4px;
+          width: 80%;
+        }
+
+        .loading-instructor-horizontal {
+          height: 16px;
+          background: #e9ecef;
+          border-radius: 4px;
+          width: 60%;
+        }
+
+        .loading-price-horizontal {
+          height: 18px;
+          background: #e9ecef;
+          border-radius: 4px;
+          width: 40%;
+          margin-top: auto;
+        }
+
+        @keyframes pulse {
+          0% { opacity: 1; }
+          50% { opacity: 0.7; }
+          100% { opacity: 1; }
+        }
+
+        .diploma-card-horizontal {
+          background: #ffffff;
+          border-radius: 12px;
+          overflow: hidden;
+          box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
+          transition: all 0.3s ease;
+          height: 200px;
+          border: 1px solid #f0f0f0;
+        }
+
+        .diploma-card-horizontal:hover {
+          transform: translateY(-2px);
+          box-shadow: 0 8px 25px rgba(0, 0, 0, 0.12);
+          border-color: #e0e0e0;
+        }
+
+        .diploma-link-horizontal {
+          text-decoration: none;
+          color: inherit;
+          height: 100%;
+          display: block;
+        }
+
+        .diploma-card-inner {
+          display: flex;
+          height: 100%;
+        }
+
+        .diploma-image-section {
+          position: relative;
+          // width: 250px;
+          height: 100%;
+          flex-shrink: 0;
+          overflow: hidden;
+        }
+
+        .diploma-image-horizontal {
+          width: 100%;
+          height: 100%;
+          object-fit: cover;
+          transition: transform 0.3s ease;
+        }
+
+        .diploma-card-horizontal:hover .diploma-image-horizontal {
+          transform: scale(1.05);
+        }
+
+        .new-badge-horizontal {
+          position: absolute;
+          top: 8px;
+          left: 8px;
+          z-index: 3;
+        }
+
+        .badge-new {
+          background: #ff4757;
+          color: white;
+          padding: 4px 8px;
+          border-radius: 4px;
+          font-size: 0.7rem;
+          font-weight: 600;
+          text-transform: uppercase;
+          letter-spacing: 0.5px;
+        }
+
+        .bookmark-btn-horizontal {
+          position: absolute;
+          top: 8px;
+          right: 8px;
+          width: 28px;
+          height: 28px;
+          background: rgba(255, 255, 255, 0.9);
+          border-radius: 50%;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          cursor: pointer;
+          transition: all 0.3s ease;
+          z-index: 4;
+        }
+
+        .bookmark-btn-horizontal:hover {
+          background: #ffffff;
+          transform: scale(1.1);
+        }
+
+        .bookmark-btn-horizontal i {
+          color: #666;
+          font-size: 0.8rem;
+        }
+
+        .diploma-content-horizontal {
+          padding: 20px;
+          flex: 1;
+          display: flex;
+          flex-direction: column;
+          justify-content: space-between;
+        }
+
+        .diploma-header {
+          margin-bottom: 12px;
+        }
+
+        .diploma-title-horizontal {
+          font-size: 1.1rem;
+          font-weight: 600;
+          color: #2d3748;
+          margin-bottom: 6px;
+          line-height: 1.3;
+          display: -webkit-box;
+          -webkit-line-clamp: 2;
+          -webkit-box-orient: vertical;
+          overflow: hidden;
+          text-overflow: ellipsis;
+          max-height: 2.6em;
+        }
+
+        .diploma-instructor {
+          font-size: 0.85rem;
+          color: #718096;
+          margin: 0;
+          font-weight: 500;
+        }
+
+        .diploma-meta {
+          display: flex;
+          flex-direction: column;
+          gap: 12px;
+        }
+
+        .diploma-stats-horizontal {
+          display: flex;
+          gap: 12px;
+          flex-wrap: wrap;
+        }
+
+        .stat-item-horizontal {
+          display: flex;
+          align-items: center;
+          gap: 4px;
+          font-size: 0.75rem;
+          color: #718096;
+          font-weight: 500;
+        }
+
+        .stat-item-horizontal i {
+          color: #4299e1;
+          font-size: 0.7rem;
+          width: 10px;
+        }
+
+        .diploma-pricing-horizontal {
+          display: flex;
+          align-items: center;
+          gap: 8px;
+          flex-wrap: wrap;
+        }
+
+        .current-price-horizontal {
+          font-size: 1.1rem;
+          font-weight: 700;
+          color: #2b6cb0;
+        }
+
+        .original-price-horizontal {
+          font-size: 0.85rem;
+          color: #a0aec0;
+          text-decoration: line-through;
+        }
+
+        .savings-text {
+          font-size: 0.75rem;
+          color: #38a169;
+          font-weight: 600;
+          background: #f0fff4;
+          padding: 2px 6px;
+          border-radius: 4px;
+        }
+
+        // /* Owl Carousel Customization */
+        // .diploma-carousel-horizontal.owl-carousel {
+        //   padding: 0;
+        // }
+
+        // .diploma-carousel-horizontal .owl-nav {
+        //   position: absolute;
+        //   top: 50%;
+        //   transform: translateY(-50%);
+        //   width: 100%;
+        //   pointer-events: none;
+        // }
+
+        // .diploma-carousel-horizontal .owl-nav button {
+        //   position: absolute;
+        //   width: 40px;
+        //   height: 40px;
+        //   background: #ffffff;
+        //   border: 2px solid #e2e8f0;
+        //   border-radius: 50%;
+        //   display: flex;
+        //   align-items: center;
+        //   justify-content: center;
+        //   pointer-events: all;
+        //   transition: all 0.3s ease;
+        //   z-index: 5;
+        //   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        // }
+
+        // .diploma-carousel-horizontal .owl-nav button:hover {
+        //   background: #4299e1;
+        //   border-color: #4299e1;
+        //   color: white;
+        //   transform: scale(1.1);
+        // }
+
+        // .diploma-carousel-horizontal .owl-nav .owl-prev {
+        //   left: -20px;
+        // }
+
+        // .diploma-carousel-horizontal .owl-nav .owl-next {
+        //   right: -20px;
+        // }
+
+        // .diploma-carousel-horizontal .owl-nav button span {
+        //   font-size: 0.9rem;
+        //   color: #718096;
+        // }
+
+        // .diploma-carousel-horizontal .owl-nav button:hover span {
+        //   color: white;
+        // }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+          .diploma-slider-container {
+            padding: 0 5px;
+          }
+
+          .diploma-card-horizontal {
+            height: 140px;
+          }
+
+          .diploma-image-section {
+            // width: 120px;
+          }
+
+          .diploma-content-horizontal {
+            padding: 15px;
+          }
+
+          .diploma-title-horizontal {
+            font-size: 1rem;
+          }
+
+          .diploma-stats-horizontal {
+            gap: 8px;
+          }
+
+          .stat-item-horizontal {
+            font-size: 0.7rem;
+          }
+
+          .current-price-horizontal {
+            font-size: 1rem;
+          }
+
+          // .diploma-carousel-horizontal .owl-nav button {
+          //   width: 36px;
+          //   height: 36px;
+          // }
+
+          // .diploma-carousel-horizontal .owl-nav .owl-prev {
+          //   left: -18px;
+          // }
+
+          // .diploma-carousel-horizontal .owl-nav .owl-next {
+          //   right: -18px;
+          // }
+
+          .loading-card-horizontal {
+            min-width: 350px;
+            height: 140px;
+          }
+
+          .loading-image-horizontal {
+            width: 120px;
+          }
+        }
+
+        @media (max-width: 480px) {
+          .diploma-card-horizontal {
+            height: 130px;
+          }
+
+          .diploma-image-section {
+            // width: 100px;
+          }
+
+          .diploma-content-horizontal {
+            padding: 12px;
+          }
+
+          .diploma-title-horizontal {
+            font-size: 0.9rem;
+            -webkit-line-clamp: 1;
+            max-height: 1.3em;
+          }
+
+          .diploma-stats-horizontal {
+            // flex-direction: column;
+            gap: 4px;
+          }
+
+          .diploma-pricing-horizontal {
+            gap: 6px;
+          }
+
+          .current-price-horizontal {
+            font-size: 0.95rem;
+          }
+
+          .loading-card-horizontal {
+            min-width: 300px;
+            height: 120px;
+          }
+
+          .loading-image-horizontal {
+            width: 100px;
+          }
+        }
+        .diploma_card_ {
+	margin-bottom: 20px;
+}
+              .live-badge {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: linear-gradient(135deg, #e74c3c, #c0392b);
+            color: white;
+            padding: 4px 8px;
+            border-radius: 12px;
+            font-size: 0.7rem;
+            font-weight: 600;
+            z-index: 2;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+          }
+
+          .live-dot {
+            color: #fff;
+            font-size: 0.5rem;
+            animation: pulse 2s infinite;
+          }
+
+          @keyframes pulse {
+            0% { opacity: 1; }
+            50% { opacity: 0.5; }
+            100% { opacity: 1; }
+          }
+
+          .live-icon {
+            color: #e74c3c;
+            margin-right: 2px;
+          }
+      `}</style>
+    </>
+  );
+};
+
+export default DiplomaSlider;

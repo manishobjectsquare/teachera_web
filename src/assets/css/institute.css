@@ -1,0 +1,121 @@
+
+.nav-btn .currency-bx .form-select{
+    /* padding-right: 0 !important; */
+    margin-left: 0 !important;
+}
+.search-btn{
+    display: flex;
+    align-items: center;
+    position: relative;
+}
+.search-btn label{
+    position: absolute;
+    right: 10px;
+    margin-bottom: 0;
+}
+.search-btn .form-control{
+    background: #E2ECFA;
+    border:  none;
+    border-radius: 50px;
+    padding: .475rem 3.2rem;
+}
+.institute-banner .blog-bnnr-innr{
+    background: url(../images/institute-bannerbg.png);
+    padding: 35px 30px;
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+}
+
+.institute_banner-right h6{
+    font-size: 16px;
+    font-weight: 500;
+    color: #fff;
+}
+.institute_banner-right h3{
+    font-size: 35px;
+    font-weight: 600;
+    color: #fff;
+    margin: 10px 0;
+}
+.institute_banner-right p{
+    color: #fff;
+}
+.featured-box {display: flex;
+      align-items: center;
+      gap:10px;
+      background:#E2ECFA;
+      color: #000;
+      border-radius:15px;
+      padding:25px 60px 25px 15px;
+}
+    .featured-box h3, .featured-box p{
+        color: #000;
+        margin: 0;
+    }
+    .featured-box-section{
+        display: flex;
+        justify-content: space-between;
+        
+    }
+.institute-title{
+    display: flex;
+    align-items: center;
+    gap: 20px;
+}    
+.institute-title .rating{
+        margin-bottom: 0 !important;
+}
+.institute-title .rating span{
+        display: inline-block;
+        padding: 1px 10px;
+        background-color: #FCECE5;
+        border-radius: 25px;
+        color: #000;
+}
+@media (max-width: 991px) {
+  .institute_banner-right h3 {
+    font-size: 16px;
+  }
+  .institute-title .rating span{
+      width: 62px;
+  }
+  .institute_banner-right p{
+    font-size: 14px;
+  }
+  .institute-banner .blog-bnnr-innr{
+      padding: 35px 10px;
+  }
+  .featured-box-section {
+    flex-wrap: wrap;
+    gap: 10px;
+  }
+  .featured-box{
+      width: 48%;
+  }
+}
+@media (max-width: 575px) {
+  .institute_banner-right h3 {
+    font-size: 20px;
+  }
+}
+.course-name{
+    display: -webkit-box;
+  -webkit-line-clamp: 1;
+  -webkit-box-orient:
+vertical;
+  overflow:
+hidden;
+  text-overflow: ellipsis;
+}
+.login-frm h3{
+    font-size: 30px;
+}
+.other-type-login {
+    background: #E2ECFA;
+    border-radius: 50px;
+    padding: 10px;
+}
+.institute-layout .dropdown-toggle::after {
+    color: #000 !important;
+}
